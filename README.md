@@ -11,4 +11,4 @@ Welcome to `yuri-func` - a personalized repository of Python utilities and funct
 To get started with `yuri-func`, clone the repository to your local machine using:
 
 ```bash
-git clone https://github.com/Yuri/YuriUtils.git
+git clone https://github.com/MSWinds/yuri-func.git
