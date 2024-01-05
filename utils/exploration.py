@@ -1,25 +1,37 @@
 # Made by: Yuri Yu
 # This is a function for data exploration. It takes in a dataframe, a column name and an optional hue column name.
-def data_exploration(df, column, hue=None):
+def data_exploration(df, column, hue=None, hue_threshold=10):
+    """
+    This function performs data exploration on a given DataFrame column.
+
+    Parameters:
+    df (DataFrame): The DataFrame to explore.
+    column (str): The name of the column to explore.
+    hue (str, optional): The name of the column to use for hue in plots.
+    hue_threshold (int, optional): The maximum number of unique values allowed for hue.
+    Returns:
+    Various outputs depending on the data type and unique values of the column.
+    """
     import pandas as pd
     import seaborn as sns
     import matplotlib.pyplot as plt
     import numpy as np
-
+    def print_count_pct(df, column):
+            count_pct = pd.concat([df[column].value_counts(), df[column].value_counts(normalize=True) * 100], axis=1)
+            count_pct.columns = ['Count', 'Percentage']
+            print(f"Counts and percentages of unique values in {column}:\n{count_pct}")
     # Check if hue is valid
-    hue_condition = hue and df[hue].nunique() < 10
+    hue_condition = hue and df[hue].nunique() < hue_threshold
     if hue and not hue_condition:
-        return "Hue has more than 10 unique values."
+        return f"Hue has more than {hue_threshold} unique values."
 
     # Determine the column type and unique value count
     col_type = df[column].dtype
     unique_values = df[column].nunique()
 
-    # Handling categorical data or numerical with less than 10 unique values
+    # Handling categorical data
     if col_type == 'object' or col_type == 'category':
-        count_pct = pd.concat([df[column].value_counts(), df[column].value_counts(normalize=True) * 100], axis=1)
-        count_pct.columns = ['Count', 'Percentage']
-        print(f"Counts and percentages of unique values in {column}:\n{count_pct}")
+        print_count_pct(df, column)
 
         # Plotting
         if hue_condition:
@@ -82,10 +94,7 @@ def data_exploration(df, column, hue=None):
         plt.tight_layout()
         plt.show()
     elif unique_values <= 10:
-        count_pct = pd.concat([df[column].value_counts(), df[column].value_counts(normalize=True) * 100], axis=1)
-        count_pct.columns = ['Count', 'Percentage']
-        print(f"Counts and percentages of unique values in {column}:\n{count_pct}")
-
+        print_count_pct(df, column)
         # Plotting
         if hue_condition:
             sns.countplot(data=df, x=column, hue=hue)
